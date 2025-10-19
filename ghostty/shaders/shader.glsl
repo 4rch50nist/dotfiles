@@ -1,68 +1,33 @@
-// Drunken stupor effect using fractal Brownian motion and Perlin noise
-// (c) moni-dz (https://github.com/moni-dz) 
-// CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
+// Original shader collected from: https://www.shadertoy.com/view/WsVSzV
+// Licensed under Shadertoy's default since the original creator didn't provide any license. (CC BY NC SA 3.0)
+// Slight modifications were made to give a green-ish effect.
 
-vec2 hash2(vec2 p) {
-    uvec2 q = uvec2(floatBitsToUint(p.x), floatBitsToUint(p.y));
-    q = (q * uvec2(1597334673U, 3812015801U)) ^ (q.yx * uvec2(2798796415U, 1979697793U));
-    return vec2(q) * (1.0/float(0xffffffffU)) * 2.0 - 1.0;
-}
-
-float perlin2d(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    vec2 u = f*f*(3.0-2.0*f);
-
-    return mix(mix(dot(hash2(i + vec2(0.0,0.0)), f - vec2(0.0,0.0)),
-                   dot(hash2(i + vec2(1.0,0.0)), f - vec2(1.0,0.0)), u.x),
-               mix(dot(hash2(i + vec2(0.0,1.0)), f - vec2(0.0,1.0)),
-                   dot(hash2(i + vec2(1.0,1.0)), f - vec2(1.0,1.0)), u.x), u.y);
-}
-
-#define OCTAVES 10     // How many passes of fractal Brownian motion to perform
-#define GAIN 0.5       // How much should each pixel move
-#define LACUNARITY 2.0 // How fast should each ripple be per pass
-
-float fbm(vec2 p) {
-    float sum = 0.0;
-    float amp = 0.5;
-    float freq = 1.0;
-    
-    for(int i = 0; i < OCTAVES; i++) {
-        sum += amp * perlin2d(p * freq);
-        freq *= LACUNARITY;
-        amp *= GAIN;
-    }
-    
-    return sum;
-}
-
-
-#define NOISE_SCALE 1.0      // How distorted the image you want to be
-#define NOISE_INTENSITY 0.05 // How strong the noise effect is
-#define ABERRATION true      // Chromatic aberration
-#define ABERRATION_DELTA 0.1 // How strong the chromatic aberration effect is
-#define ANIMATE true
-#define SPEED 0.4            // Animation speed
+float warp = 0.30; // simulate curvature of CRT monitor
+float scan = 1.00; // simulate darkness between scanlines
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
-    vec2 uv = fragCoord/iResolution.xy;
-    float time = ANIMATE ? iTime * SPEED : 0.0;
- 
-    vec2 noisePos = uv * NOISE_SCALE + vec2(time);
-    float noise = fbm(noisePos) * NOISE_INTENSITY;
+    // squared distance from center
+    vec2 uv = fragCoord / iResolution.xy;
+    vec2 dc = abs(0.5 - uv);
+    dc *= dc;
 
-    vec3 col;
+    // warp the fragment coordinates
+    uv.x -= 0.5; uv.x *= 1.0 + (dc.y * (0.3 * warp)); uv.x += 0.5;
+    uv.y -= 0.5; uv.y *= 1.0 + (dc.x * (0.4 * warp)); uv.y += 0.5;
 
-    if (ABERRATION) {
-        col.r = texture(iChannel0, uv + vec2(noise * (1.0 + ABERRATION_DELTA))).r;
-        col.g = texture(iChannel0, uv + vec2(noise)).g;
-        col.b = texture(iChannel0, uv + vec2(noise * (1.0 - ABERRATION_DELTA))).b;
-    } else {
-        vec2 distortedUV = uv + vec2(noise);
-        col = texture(iChannel0, distortedUV).rgb;
+    // sample inside boundaries, otherwise set to black
+    if (uv.y > 1.0 || uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0)
+        fragColor = vec4(0.07, 0.07, 0.1, 0.8);
+    else
+    {
+        // determine if we are drawing in a scanline
+        float apply = abs(sin(fragCoord.y) * 0.5 * scan);
+
+        // sample the texture and apply a teal tint
+        vec3 color = texture(iChannel0, uv).rgb;
+
+        // mix the sampled color with the teal tint based on scanline intensity
+        fragColor = vec4(mix(color, vec3(0.0), apply), 0.9-apply);
     }
-
-    fragColor = vec4(col, 1.0);
 }
