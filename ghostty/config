@@ -1,0 +1,6 @@
+title = "Ghostty" 
+background-blur = 25 
+background-opacity = 0.8
+theme = Catppuccin Mocha  
+command = "/usr/bin/env XDG_CONFIG_HOME=$HOME/.config PATH=/opt/homebrew/bin:$PATH /opt/homebrew/bin/nu"
+## custom-shader = ~/.config/ghostty/shaders/shader.glsl
