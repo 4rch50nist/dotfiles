@@ -17,6 +17,5 @@
 # You can remove these comments if you want or leave
 # them for future reference.
 
-$env.PATH =  $env.PATH | prepend "/opt/homebrew/bin"
-
-
+$env.PATH =  $env.PATH | prepend "/opt/homebrew/bin" | prepend "/opt/homebrew/opt/nvm/nvm.sh" | append "/usr/local/bin" | prepend "/Users/aditya/.local/bin"
+ 

@@ -17,8 +17,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     uv.y -= 0.5; uv.y *= 1.0 + (dc.x * (0.4 * warp)); uv.y += 0.5;
 
     // sample inside boundaries, otherwise set to black
-    if (uv.y > 1.0 || uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0)
-        fragColor = vec4(0.0, 0.0, 0.0,  0.6);
+    if (uv.y > 1.0 || uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0) {
+
+fragColor = vec4(vec3(0.110, 0.102, 0.102), 1.0);
+    }
     else
     {
         // determine if we are drawing in a scanline
@@ -31,6 +33,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         vec3 color = texture(iChannel0, uv).rgb;
 
         // mix the sampled color with the tint based on scanline intensity
-        fragColor = vec4(mix(color * tint, vec3(0.3), apply),1.0);
+        fragColor = vec4(mix(color , vec3(0.3), apply),1.0);
     }
 }

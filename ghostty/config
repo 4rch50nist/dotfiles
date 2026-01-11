@@ -1,10 +1,8 @@
-window-padding-x = 4
-window-padding-y = 4
+window-padding-x = 10
+window-padding-y = 10
 window-padding-color = background
 title = "Ghostty"
-## background-blur = 25
-## background-opacity = 0.8
-theme = Black Metal (Burzum)
+theme = Kanagawa Dragon
 command = "/usr/bin/env XDG_CONFIG_HOME=$HOME/.config PATH=/opt/homebrew/bin:$PATH /opt/homebrew/bin/nu"
 custom-shader = ~/.config/ghostty/shaders/shader.glsl
 ## custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
