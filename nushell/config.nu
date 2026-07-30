@@ -87,7 +87,9 @@ filesize: {|x| if $x == 0mb { $cat_theme.overlay0 } else if $x < 1mb { $cat_them
         mode: "compact"
     }
 }
-
+def idf [...args] {
+    bash -c $"source ~/.espressif/tools/activate_idf_v6.0.1.sh && idf.py ($args | str join ' ')"
+}
 # Alias commands
 alias rmdir = rm -r -f
 alias ls = eza --icons --all
