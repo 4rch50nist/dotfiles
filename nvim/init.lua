@@ -1,60 +1,29 @@
-vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
-vim.opt.relativenumber = true
-vim.opt.number = true
-vim.opt.mouse = a
-vim.opt.showmode = false
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
-vim.opt.expandtab = true
--- Nvim has no direct connection to the system clipboard. Instead it depends on
---a |provider| which transparently uses shell commands to communicate with the
---system clipboard or any other clipboard "backend".
-vim.schedule(function()
-    vim.opt.clipboard = 'unnamedplus'
-end)
+-- This file simply bootstraps the installation of Lazy.nvim and then calls other files for execution
+-- This file doesn't necessarily need to be touched, BE CAUTIOUS editing this file and proceed at your own risk.
+local lazypath = vim.env.LAZY or vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
 
-vim.o.swapfile = false
-vim.opt.undofile = true
+if not (vim.env.LAZY or (vim.uv or vim.loop).fs_stat(lazypath)) then
+  -- stylua: ignore
+  local result = vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
+  if vim.v.shell_error ~= 0 then
+    -- stylua: ignore
+    vim.api.nvim_echo({ { ("Error cloning lazy.nvim:\n%s\n"):format(result), "ErrorMsg" }, { "Press any key to exit...", "MoreMsg" } }, true, {})
+    vim.fn.getchar()
+    vim.cmd.quit()
+  end
+end
 
-vim.opt.cursorline = true
+vim.opt.rtp:prepend(lazypath)
 
-vim.opt.scrolloff = 10
-vim.opt.confirm = true
+-- validate that lazy is available
+if not pcall(require, "lazy") then
+  -- stylua: ignore
+  vim.api.nvim_echo({ { ("Unable to load lazy from: %s\n"):format(lazypath), "ErrorMsg" }, { "Press any key to exit...", "MoreMsg" } }, true, {})
+  vim.fn.getchar()
+  vim.cmd.quit()
+end
 
--- TIP: Disable arrow keys in normal mode
- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
--- Keybinds to make split navigation easier.
---  Use CTRL+<hjkl> to switch between windows
---
---  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-
--- Sync clipboard between OS and Neovim.
---  Schedule the setting after `UiEnter` because it can increase startup-time.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
-vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
-end)
-
-
-
--- keymaps in vim 
-vim.keymap.set('n', 'ex', ':Neotree toggle<CR>', {silent =true , desc = "Toggles the neotree file explorer"})
-vim.keymap.set("i", "kk", "<Esc>", { silent = true, noremap = true })
-
--- Dont like the ~ that vim does, instead just give space
-vim.opt.fillchars:append({ eob = " " })
-require('config.lazy')
-
-
-
+vim.o.background = "light"
+require "lazy_setup"
+require "polish"
 

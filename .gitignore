@@ -4,3 +4,4 @@
 **/*.txt
 /configstore
 /nvim/lazy-lock.json
+

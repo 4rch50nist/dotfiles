@@ -1,8 +1,5 @@
 # Initialize Oh My Posh with a custom config
-oh-my-posh init nu --config ~/.config/.poshthemes/1_shell.omp.json
-
-# Source the Oh My Posh configuration for NuShell
-source ~/.config/nushell/.oh-my-posh.nu
+oh-my-posh init nu --config ~/.config/poshthemes/1_shell.omp.json
 
 # Define the color theme for the terminal
 let cat_theme = {
@@ -91,51 +88,22 @@ filesize: {|x| if $x == 0mb { $cat_theme.overlay0 } else if $x < 1mb { $cat_them
     }
 }
 
-# Welcome message logic based on the date
-let flag_file = $"($env.XDG_CONFIG_HOME)/nushell/last_msg_time.txt"
-let today = $"(date now | format date "%d-%m-%Y")"
-
-if ($flag_file | path exists) {
-    let welcome_msg_file_content = open $flag_file
-    let last_shown_date = $welcome_msg_file_content
-    let shown_on_date = $welcome_msg_file_content
-    if $last_shown_date != $today {
-        # It’s a new day, show the message and update the flag file
-        source $"~/.config/nushell/banner.nu"
-        $today | save $flag_file --force
-    }
-} else {
-    # For when the file isn't set
-    source $"~/.config/nushell/banner.nu"
-    $today | save $flag_file
+def idf [...args] {
+    bash -c $"source ~/.espressif/tools/activate_idf_v6.0.1.sh && idf.py ($args | str join ' ')"
 }
-
 # Alias commands
 alias rmdir = rm -r -f
-alias ls = eza --icons --all  
-alias ll = eza --long --all --icons --header 
-alias diskuse = dust
-# Used for opening the following editors from the CLI, (if installed)
-# Idea IntelliJ for Java
-# Pycharm for Python
-# RustRover for Rust
-# Android Studio for Android
-# VS Code for anything else.
+alias ls = eza --icons --all
+alias ll = eza --long --all --icons --header
 
-# Define a function to open specific editors based on the language
-def code [
-    lang: string # the language to open the editor for, languages: java, rust, python, android
-    filepath: string # where to open the editor, . for this directory
-] {
-    match $lang {
-        "java" => { ^$'($env.LOCALAPPDATA)/JetBrains/Toolbox/scripts/idea.cmd'  $filepath }
-        "rust" => { ^$'($env.LOCALAPPDATA)\JetBrains\Toolbox\scripts/rustrover.cmd' $filepath }
-        "python" => { ^$'($env.LOCALAPPDATA)/JetBrains/Toolbox/scripts/pycharm.cmd' $filepath }
-        "android" => { ^$'($env.LOCALAPPDATA)/JetBrains/Toolbox/scripts/studio.cmd' $filepath }
-	"js" => {^$'($env.LOCALAPPDATA)/JetBrains/Toolbox/scripts/webstorm.cmd' $filepath }
-        _ => { ^$'($env.LOCALAPPDATA)/Programs/Microsoft VS Code/Code.exe' $filepath }
-    }
-}
+alias diskuse = dust
 
 # Apply the config settings
 $env.config = $config
+
+
+$env.EDITOR = "nvim"
+$env.VISUAL = "nvim"
+$env.config.buffer_editor = "nvim"
+
+$env.FZF_DEFAULT_OPTS_FILE = "~/.config/fzf/fzf.conf"
