@@ -9,7 +9,7 @@ return {
   ---@type AstroUIOpts
   opts = {
     -- change colorscheme
-    colorscheme = "gruvbox",
+    colorscheme = "mellifluous",
     -- AstroUI allows you to easily modify highlight groups easily for any and all colorschemes
     -- Options are applied BEFORE the colorscheme
     highlights = {

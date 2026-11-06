@@ -20,3 +20,5 @@
 $env.PATH =  $env.PATH | prepend "/opt/homebrew/bin" | prepend "/opt/homebrew/opt/nvm/nvm.sh" | append "/usr/local/bin" | prepend "/Users/aditya/.local/bin"
  $env.PATH = ($env.PATH | prepend "/opt/homebrew/Caskroom/sqlcl/26.2.0.181.2110/sqlcl/bin")
 $env.PATH = ($env.PATH | prepend "/opt/homebrew/opt/postgresql@17/bin")
+$env.PATH = ($env.PATH | prepend "/Library/TeX/texbin")
+$env.VIMRUNTIME = "/opt/homebrew/opt/neovim/share/nvim/runtime"
