@@ -10,8 +10,7 @@ let cat_theme = {
     red: "#ed8796",
     maroon: "#ee99a0",
     peach: "#f5a97f",
-    yellow: "#eed49f",
-    green: "#a6da95",
+    yellow: "#eed49f", green: "#a6da95",
     teal: "#8bd5ca",
     sky: "#91d7e3",
     sapphire: "#7dc4e4",
@@ -104,3 +103,10 @@ alias diskuse = dust
 
 # Apply the config settings
 $env.config = $config
+
+
+$env.EDITOR = "nvim"
+$env.VISUAL = "nvim"
+$env.config.buffer_editor = "nvim"
+
+$env.FZF_DEFAULT_OPTS_FILE = "~/.config/fzf/fzf.conf"
