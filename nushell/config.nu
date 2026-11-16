@@ -1,5 +1,5 @@
 # Initialize Oh My Posh with a custom config
-oh-my-posh init nu --config ~/.config/poshthemes/1_shell.omp.json
+oh-my-posh init nu --config ~/.config/poshthemes/yoshith_cust.json
 
 # Define the color theme for the terminal
 let cat_theme = {
