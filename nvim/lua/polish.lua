@@ -15,8 +15,20 @@ vim.opt.scrolloff = 10
 vim.opt.confirm = true
 vim.opt.fillchars:append { eob = " " }
 
--- VimTeX: build files in .build/, PDFs in pdf/
-vim.g.vimtex_compiler_latexmk = { aux_dir = ".build", out_dir = "pdf" }
+-- VimTeX: build files in .build/
+vim.g.vimtex_compiler_latexmk = { aux_dir = ".build", out_dir = ".build" }
+-- after every successful compile, publish a clean copy to pdf/
+vim.api.nvim_create_autocmd("User", {
+  pattern = "VimtexEventCompileSuccess",
+  callback = function()
+    local vt = vim.b.vimtex
+    if not vt then return end
+    local src = vt.root .. "/.build/" .. vt.name .. ".pdf"
+    local dst_dir = vt.root .. "/pdf"
+    vim.fn.mkdir(dst_dir, "p")
+    vim.uv.fs_copyfile(src, dst_dir .. "/" .. vt.name .. ".pdf")
+  end,
+})
 
 -- Providers you don't use (silences four health warnings)
 vim.g.loaded_perl_provider = 0

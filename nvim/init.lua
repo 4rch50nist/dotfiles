@@ -27,3 +27,24 @@ vim.o.background = "light"
 require "lazy_setup"
 require "polish"
 
+-- This is for proper indentation on LaTeX
+local cruft = vim.fn.stdpath "cache" .. "/latexindent/"
+vim.fn.mkdir(cruft, "p")
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.tex",
+  callback = function(args)
+    local buf = args.buf
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    -- no file argument: latexindent reads stdin and prints to stdout; -c keeps indent.log out of your project
+    local out = vim.fn.systemlist({ "latexindent", "-c", cruft }, lines)
+    if vim.v.shell_error ~= 0 then
+      vim.notify("latexindent failed:\n" .. table.concat(out, "\n"), vim.log.levels.WARN)
+      return
+    end
+    if not vim.deep_equal(out, lines) then
+      local view = vim.fn.winsaveview()
+      vim.api.nvim_buf_set_lines(buf, 0, -1, false, out)
+      vim.fn.winrestview(view)
+    end
+  end,
+})

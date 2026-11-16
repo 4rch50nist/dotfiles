@@ -1,0 +1,5 @@
+[credential]
+	helper = osxkeychain
+[user]
+	name = avs
+	email = adityavikramsinha19@gmail.com

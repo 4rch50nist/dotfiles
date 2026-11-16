@@ -1,49 +1,58 @@
-# Fetch weather data
-# get github events data
-let github_token = $env.github_terminal_view_api_token
-# parallelized the shit out of this bad bou
-# TODO : Try to make this a background job? since nu is supporting this now.
-let api_calls = [
-{ http get "https://api.open-meteo.com/v1/forecast?latitude=22.5744&longitude=88.3629&current=temperature_2m,apparent_temperature,wind_speed_10m,rain&forecast_days=1"}
-    {http get --headers ["Authorization" $"token ($github_token)"] "https://api.github.com/users/adityavikramsinha/events" }
-] | par-each {|req| do $req}
+# --- data sources --------------------------------------------------------
+let weather_url = "https://wttr.in/Kolkata?format=j1"
+let gh_url      = "https://api.github.com/users/adityavikramsinha/events"
 
+# token is optional: without it you just get GitHub's lower rate limit
+let github_token = $env.github_terminal_view_api_token? | default ""
+let gh_headers = if ($github_token | is-empty) { [] } else { [Authorization $"token ($github_token)"] }
 
-# weather api
-let current_weather = $api_calls       | get 0 | get current 
-let temperature     = $current_weather | get temperature_2m
-let app_temp        = $current_weather | get apparent_temperature 
-let wind_speed      = $current_weather | get wind_speed_10m 
-let rain            = $current_weather | get rain
-# weather api glyph 
-let temperature_glyph = if $temperature >= 30 { "☀️" } else { "🍃" }
+# parallel, but --keep-order so index 0/1/2 always match these closures
+let results = [
+    { try { http get --raw $weather_url | from json } catch { null } }
+    { try { http get --headers $gh_headers $gh_url } catch { [] } }
+    { try {
+        system_profiler SPAirPortDataType
+        | lines
+        | where $it =~ 'Transmit Rate'
+        | first
+        | split row ':'
+        | last
+        | str trim
+      } catch { "?" } }
+] | par-each --keep-order {|job| do $job }
 
+# --- weather (wttr.in) ---------------------------------------------------
+let current_weather = $results.0 | get current_condition?.0? | default {}
+let temperature = $current_weather.temp_C? | default "?"
+let app_temp    = $current_weather.FeelsLikeC? | default "?"
+let wind_speed  = $current_weather.windspeedKmph? | default "?"
+let rain        = $current_weather.precipMM? | default "?"
+let temp_num    = try { $temperature | into int } catch { 0 }
+let temperature_glyph = if $temp_num >= 30 { "☀️" } else { "🍃" }
 
-let commit_count = $api_calls | get 1 | length
+# --- github / system -----------------------------------------------------
+let commit_count = $results.1 | length
+let network_in_mbps = $results.2
+
+let mem = sys mem
+let mem_pct = ($mem.used / $mem.total * 100 | into int)
+let host = sys host
 
 # I don't like it being this close to terminal, sorry.
 let space = "            "
 
-# get agg(up/down) network speeds, but there is no native support
-# so we will have to just get it from the system it self
-let network_table =  wmic nic where "NetEnabled=true" get Speed | lines | skip 1 | str trim | get 0 | split row " "
-let network_speed = $network_table | get 0 | into int
-let network_in_mbps = ( $network_speed / 1_000_000 )
-
-
-
-# welcome message
+# --- banner --------------------------------------------------------------
 let welcome = $"
 
 
 
 
-($space) █████╗ ██╗   ██╗███████╗                 ($commit_count)
-($space)██╔══██╗██║   ██║██╔════╝               ⾕ (sys host | get hostname)
-($space)███████║██║   ██║███████╗               ↑⇣ (sys host | get uptime)
-($space)██╔══██║╚██╗ ██╔╝╚════██║               ⛁  (sys mem | get used) / (sys mem | get total) [((sys mem | get used) / (sys mem | get total) * 100 | into int)%]
-($space)██║  ██║ ╚████╔╝ ███████║               ᯤ  ($network_in_mbps)mbips
-($space)╚═╝  ╚═╝  ╚═══╝  ╚══════╝               ($temperature_glyph) ($temperature)°C[($app_temp)] | ≈ ($wind_speed) km/h | ☔ ($rain)mm  
+($space) █████╗ ██╗   ██╗███████╗                 ($commit_count)
+($space)██╔══██╗██║   ██║██╔════╝               ⾕ ($host.hostname)
+($space)███████║██║   ██║███████╗               ↑⇣ ($host.uptime)
+($space)██╔══██║╚██╗ ██╔╝╚════██║               ⛁  ($mem.used) / ($mem.total) [($mem_pct)%]
+($space)██║  ██║ ╚████╔╝ ███████║               ᯤ  ($network_in_mbps) Mbps
+($space)╚═╝  ╚═╝  ╚═══╝  ╚══════╝               ($temperature_glyph) ($temperature)°C[($app_temp)] | ≈ ($wind_speed) km/h | ☔ ($rain)mm
 
 
 
@@ -51,5 +60,5 @@ let welcome = $"
 
 "
 
-let $gradient = $welcome | ansi gradient --fgstart '0xF9E2AF' --fgend '0xd158d1'
+let gradient = $welcome | ansi gradient --fgstart '0xF9E2AF' --fgend '0xd158d1'
 print $gradient

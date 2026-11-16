@@ -1,0 +1,104 @@
+tap "espressif/eim"
+tap "ngrok/ngrok"
+# Clone of cat(1) with syntax highlighting and Git integration
+brew "bat"
+# Generate compilation database for clang tooling
+brew "bear"
+# Core application library for C
+brew "glib"
+# Low-level library for pixel manipulation
+brew "pixman"
+# Cross-platform make
+brew "cmake"
+# USB programmer
+brew "dfu-util"
+# More intuitive version of du in rust
+brew "dust"
+# Modern, maintained replacement for ls
+brew "eza"
+# Like neofetch, but much faster because written mostly in C
+brew "fastfetch"
+# Low-level access to audio, keyboard, mouse, joystick, and graphics
+brew "sdl3"
+# SDL2 compatibility layer that uses SDL3 behind the scenes
+brew "sdl2-compat"
+# Play, record, convert, and stream select audio and video codecs
+brew "ffmpeg"
+# Stack trace visualizer
+brew "flamegraph"
+# Command-line fuzzy finder written in Go
+brew "fzf", args: ["HEAD"]
+# GNU compiler collection
+brew "gcc"
+# Quickly rewrite git repository history
+brew "git-filter-repo"
+# Graph visualization software from AT&T and Bell Labs
+brew "graphviz"
+# Improved top (interactive process viewer)
+brew "htop"
+# Update of iperf: measures TCP, UDP, and SCTP bandwidth
+brew "iperf3"
+# Add indentation to LaTeX files
+brew "latexindent"
+# Cryptographic library based on the code from GnuPG
+brew "libgcrypt"
+# General purpose TCP-IP emulator
+brew "libslirp"
+# NaCl networking and cryptography library
+brew "libsodium"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.14"
+# Next-gen compiler infrastructure
+brew "llvm"
+# Remote terminal application
+brew "mosh"
+# Ambitious Vim-fork focused on extensibility and agility
+brew "neovim", link: false
+# Port scanning utility for large networks
+brew "nmap"
+# Open-source, cross-platform JavaScript runtime environment
+brew "node"
+# Package for scientific computing with Python
+brew "numpy"
+# Modern shell for the GitHub era
+brew "nushell"
+# Manage multiple Node.js versions
+brew "nvm"
+# Prompt theme engine for any shell
+brew "oh-my-posh"
+# Swiss-army knife of markup format conversion
+brew "pandoc"
+# Execute binaries from Python packages in isolated environments
+brew "pipx"
+# Object-relational database system
+brew "postgresql@17", restart_service: :changed, link: true
+# Command-line interface for https://speedtest.net bandwidth tests
+brew "speedtest-cli"
+# TUI-based PDF viewer
+brew "tdf"
+# Simple TTY terminal I/O application
+brew "tio"
+# Verilog simulator
+brew "verilator"
+# JavaScript package manager
+brew "yarn"
+# Feature-rich command-line audio/video downloader
+brew "yt-dlp"
+# ESP-IDF Installation Manager - CLI tool for setting up ESP-IDF development environment
+brew "espressif/eim/eim", trusted: true
+# App to build and share containerised applications and microservices
+cask "docker-desktop"
+cask "font-dejavu"
+cask "font-jetbrains-mono-nerd-font"
+# Terminal emulator that uses platform-native UI and GPU acceleration
+cask "ghostty"
+# Full TeX Live distribution with GUI applications
+cask "mactex"
+# Neovim Client
+cask "neovide-app"
+cask "ngrok/ngrok/ngrok"
+# PDF reader and note-taking application
+cask "skim"
+# Oracle SQLcl is the modern command-line interface for the Oracle Database
+cask "sqlcl"
+npm "corepack"
